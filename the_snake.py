@@ -45,7 +45,7 @@ clock = pygame.time.Clock()
 class GameObject:
     """Базовый класс объекта игры"""
 
-    def init(self, body_color=None):
+    def __init__(self, body_color=None):
         """Инициализация базовых атрибутов"""
         self.position = CENTER_POINT
         self.body_color = body_color
@@ -63,9 +63,9 @@ class GameObject:
 class Apple(GameObject):
     """Класс наследник - яблоко"""
 
-    def init(self):
+    def __init__(self):
         """Инициализация базовых атрибутов"""
-        super().init(APPLE_COLOR)
+        super().__init__(APPLE_COLOR)
         self.randomize_position()
 
     def randomize_position(self):
@@ -86,9 +86,9 @@ class Snake(GameObject):
 
     positions = []
 
-    def init(self):
+    def __init__(self):
         """Инициализация базовых атрибутов"""
-        super().init(SNAKE_COLOR)
+        super().__init__(SNAKE_COLOR)
         self.next_direction = None
         self.last = None
         self.length = 1
@@ -155,4 +155,31 @@ def handle_keys(game_object):
                 game_object.next_direction = LEFT
             elif event.key == pygame.K_RIGHT and game_object.direction != LEFT:
                 game_object.next_direction = RIGHT
-...
+
+
+def main():
+    """Мейн функция"""
+    # Инициализация PyGame:
+    pygame.init()
+    apple = Apple()
+    snake = Snake()
+
+    while True:
+        clock.tick(SPEED)
+
+        handle_keys(snake)
+        snake.update_direction()
+        snake.move()
+
+        if snake.get_head_position() == apple.position:
+            while apple.position in snake.positions:
+                apple.randomize_position()
+            snake.length += 1
+
+        apple.draw()
+        snake.draw()
+        pygame.display.update()
+
+
+if __name__ == '__main__':
+    main()
